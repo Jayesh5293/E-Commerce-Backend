@@ -1,5 +1,7 @@
 package dev.jayesh.productservice.models;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,10 +11,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Product {
+@Entity
+public class Product extends BaseModel {
 
-    private long id;
     private String title, description, imageURL;
-    private Category category;
     private double price;
+
+    @ManyToOne
+    private Category category;
 }

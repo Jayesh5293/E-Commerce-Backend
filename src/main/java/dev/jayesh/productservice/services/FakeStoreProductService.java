@@ -1,5 +1,6 @@
 package dev.jayesh.productservice.services;
 
+import dev.jayesh.productservice.dtos.FakeStoreCategoryDTO;
 import dev.jayesh.productservice.dtos.FakeStoreProductDTO;
 import dev.jayesh.productservice.models.Category;
 import dev.jayesh.productservice.models.Product;
@@ -19,8 +20,9 @@ public class FakeStoreProductService implements ProductService {
         this.mRestTemplate = restTemplate;
     }
 
+    // here we are creating a new product by passing all product properties.
     @Override
-    public void createProduct(String title, String image, String description, String category, double price) {
+    public Product createProduct(String title, String image, String description, String category, double price) {
         FakeStoreProductDTO fakeStoreProductDTO = new FakeStoreProductDTO();
 
         fakeStoreProductDTO.setTitle(title);
@@ -29,10 +31,11 @@ public class FakeStoreProductService implements ProductService {
         fakeStoreProductDTO.setCategory(category);
         fakeStoreProductDTO.setPrice(price);
 
-        FakeStoreProductDTO response = mRestTemplate.postForObject("", fakeStoreProductDTO, FakeStoreProductDTO.class);
-        return;
+        FakeStoreProductDTO response = mRestTemplate.postForObject("https://fakestoreapi.com/products", fakeStoreProductDTO, FakeStoreProductDTO.class);
+        return response.toProduct();
     }
 
+    // It is returning product by its id.
     @Override
     public Product getProduct(long id) {
         FakeStoreProductDTO fakeStoreProductDto = mRestTemplate
@@ -54,22 +57,53 @@ public class FakeStoreProductService implements ProductService {
     }
 
     @Override
-    public Product getProductByCategory(Category category) {
-        return null;
+    public List<Product> getProductByCategory(Category category) {
+
+        List<Product> products = new ArrayList<>();
+        FakeStoreProductDTO[] productDTOS = mRestTemplate.getForObject("https://fakestoreapi.com/products/category/" + category, FakeStoreProductDTO[].class);
+
+        if (productDTOS != null) {
+            for (FakeStoreProductDTO fakeStoreProductDTO : productDTOS) {
+                products.add(fakeStoreProductDTO.toProduct());
+            }
+        }
+        return products;
     }
 
+    /**
+     * It will return all the products available on Fake Store.
+     * @return List of Products.
+     */
     @Override
     public List<Product> getAllProducts() {
-        List<Product> allProducts = new ArrayList<>();
-        FakeStoreProductDTO fakeStoreProductDTO = mRestTemplate.
-                getForObject("https://fakestoreapi.com/products", FakeStoreProductDTO.class);
-        return allProducts;
+        List<Product> products = new ArrayList<>();
+        FakeStoreProductDTO[] fakeStoreProductDTO = mRestTemplate.
+                getForObject("https://fakestoreapi.com/products", FakeStoreProductDTO[].class);
+
+        if (fakeStoreProductDTO != null) {
+            for (FakeStoreProductDTO fakeStoreProductdto : fakeStoreProductDTO) {
+                products.add(fakeStoreProductdto.toProduct());
+            }
+        }
+        return products;
     }
 
+    /**
+     * it will return all the categories on Fake Store.
+     * @return List of Categories.
+     */
     @Override
     public List<Category> getAllCategories() {
+        List<Category> categories = new ArrayList<>();
 
-        return null;
+        FakeStoreCategoryDTO[] fakeStoreCategories = mRestTemplate.
+                getForObject("https://fakestoreapi.com/products/categories", FakeStoreCategoryDTO[].class);
+        if (fakeStoreCategories != null) {
+            for (FakeStoreCategoryDTO fakeStoreCategoryDTO : fakeStoreCategories) {
+                categories.add(fakeStoreCategoryDTO.toCategory());
+            }
+        }
+        return categories;
     }
 
     @Override
@@ -96,8 +130,9 @@ public class FakeStoreProductService implements ProductService {
         System.out.println("Product is updated");
     }
 
+    // Deleting a product through its ID.
     @Override
     public void deleteProduct(long id) {
-
+        mRestTemplate.delete("https://fakestoreapi.com/products/" + id);
     }
 }

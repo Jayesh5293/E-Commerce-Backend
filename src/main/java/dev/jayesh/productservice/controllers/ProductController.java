@@ -1,5 +1,6 @@
 package dev.jayesh.productservice.controllers;
 
+import dev.jayesh.productservice.dtos.CreateProductRequestDTO;
 import dev.jayesh.productservice.models.Category;
 import dev.jayesh.productservice.models.Product;
 import dev.jayesh.productservice.services.ProductService;
@@ -8,16 +9,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-public class ProductManager {
+public class ProductController {
     ProductService mProductService;
 
-    ProductManager(ProductService productService) {
+    ProductController(ProductService productService) {
         this.mProductService = productService;
     }
 
-    @PostMapping
-    public void createProduct() {
-
+    @PostMapping("/products")
+    public Product createProduct(@RequestBody CreateProductRequestDTO createProductRequestDTO) {
+        return mProductService.createProduct(createProductRequestDTO.getTitle(),
+                createProductRequestDTO.getImage(),
+                createProductRequestDTO.getDescription(),
+                createProductRequestDTO.getCategory(),
+                createProductRequestDTO.getPrice());
     }
 
     @PutMapping("/product/{id}")
@@ -36,7 +41,7 @@ public class ProductManager {
     }
 
     @GetMapping("/products/category/{productCategory}")
-    public Product getProductByCategory(@PathVariable Category productCategory) {
+    public List<Product> getProductByCategory(@PathVariable Category productCategory) {
         return mProductService.getProductByCategory(productCategory);
     }
 
