@@ -1,4 +1,4 @@
-Microservices Ecommerce Platform - Overview
+<b> Microservices Ecommerce Platform - Overview </b>
 
 Welcome to our Microservices Ecommerce Platform repository! This platform is designed to provide a robust foundation for building and scaling ecommerce websites, leveraging microservices architecture and a suite of core functionalities essential for any ecommerce operation. Below, you'll find an overview of the architecture, key features, and the technologies used in this project.
 
